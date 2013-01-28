@@ -96,12 +96,30 @@ declare var util: {
     ready(f: Function): void;
 }
 
+module cocos {
+    class Timer extends BObject {
+	constructor(o: { callback: Function; interval: float; });
+    }
+}
+
 module cocos.actions {
     
     export class Action extends BObject {
 	public isDone: any;
 	public tag: any;
 	public target: cocos.nodes.Node;
+
+	constructor();
+	
+	reverse(): Action;
+	
+	startWithTarget(target: cocos.nodes.Node): void;
+	
+	step(dt: number): void;
+	
+	stop(): void;
+	
+	update(time: number): void;
     }
 
 }
