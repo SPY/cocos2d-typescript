@@ -97,7 +97,23 @@ declare var util: {
 }
 
 module cocos {
-    class Timer extends BObject {
+
+    export class Texture2D extends BObject {
+	public contentSize: geometry.Size;
+	public data: string;
+
+	constructor(data: { file?: string; data: Texture2D; });
+	constructor(data: { file?: string; data: HTMLImageElement; });
+
+	dataDidLoad(data: any): void;
+	drawAtPoint(ctx: any, point: geometry.Point): void;
+	drawInRect(ctx: any, point: geometry.Rect): void;
+
+	get_pixelsHigh: number;
+	get_pixelsWide: number;
+    }
+
+    export class Timer extends BObject {
 	constructor(o: { callback: Function; interval: float; });
     }
 }
