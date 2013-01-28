@@ -2,19 +2,19 @@ declare class BObject {
     public id: string;
 
     bindTo(key: string, target: BObject, targetKey?: string, noNotify?: bool): void;
-    
+
     changed(key: any): void;
-    
+
     create(): BObject;
-    
+
     extend(properties: {}): any;
     extend(paerent: any, properties: {}): any;
-    
-    get(key: string): any;
-    static get(key: string): any;
-    
-    set(key: string, value: any): void;
-    static set(key: string, value: any): void;
+
+    get (key: string): any;
+    static get (key: string): any;
+
+    set (key: string, value: any): void;
+    static set (key: string, value: any): void;
 
     setValues(values: { [key: string]: any; }): void;
 
@@ -27,7 +27,7 @@ declare class BArray extends BObject {
     constructor(array: any[]);
 
     getArray(): any[];
-    
+
     getAt(i: number): any;
 
     insertAt(i: number, value: any): void;
@@ -77,7 +77,7 @@ declare var util: {
 
     domReady(): void;
 
-    each(arr: any[], f:any => any);
+    each(arr: any[], f: (any) => any);
 
     extend(target: any, ext: any): void;
 
@@ -87,7 +87,7 @@ declare var util: {
 
     isRegExp(r: any): bool;
 
-    map(arr: any[], f:any => any): any[];
+    map(arr: any[], f: (any) => any): any[];
 
     merge(first: any, ...other: any[]): any;
 
@@ -98,133 +98,186 @@ declare var util: {
 
 module cocos {
 
+    export class ActionManager extends BObject {
+        static sharedManager: ActionManager;
+
+        addAction(target: cocos.nodes.Node): void;
+        getActionFromTarget(target: cocos.nodes.Node): actions.Action;
+        pauseTarget(target: any): void;
+        removeAction(action: actions.Action): void;
+        removeAllActionsFromTarget(target: nodes.Node): void;
+        resumeTarget(target: any): void;
+    }
+
+    export class Animation extends BObject {
+        constructor(frames: { frames: SpriteFrame[]; delay?: number; });
+    }
+
+    export class AnimationCache extends BObject {
+        public animations: { [name: string]: Animation; };
+
+        public static sharedAnimationCache: AnimationCache;
+
+        addAnimation(animation: { name: string; animation: Animation; }): void;
+        getAnimation(name: { name: string; }): Animation;
+        removeAnimation(name: { name: string; }): void;
+    }
+
+    export class SpriteFrame extends BObject {
+        constructor(texture: { texture: Texture2D; rect: geometry.Rect; });
+
+        copy(): SpriteFrame;
+    }
+
     export class Texture2D extends BObject {
-	public contentSize: geometry.Size;
-	public data: string;
+        public contentSize: geometry.Size;
+        public data: string;
 
-	constructor(data: { file?: string; data: Texture2D; });
-	constructor(data: { file?: string; data: HTMLImageElement; });
+        constructor(data: { file?: string; data: Texture2D; });
+        constructor(data: { file?: string; data: HTMLImageElement; });
 
-	dataDidLoad(data: any): void;
-	drawAtPoint(ctx: any, point: geometry.Point): void;
-	drawInRect(ctx: any, point: geometry.Rect): void;
+        dataDidLoad(data: any): void;
+        drawAtPoint(ctx: any, point: geometry.Point): void;
+        drawInRect(ctx: any, point: geometry.Rect): void;
 
-	get_pixelsHigh: number;
-	get_pixelsWide: number;
+        get_pixelsHigh: number;
+        get_pixelsWide: number;
     }
 
     export class Timer extends BObject {
-	constructor(o: { callback: Function; interval: float; });
+        constructor(o: { callback: Function; interval: number; });
     }
 }
 
 module cocos.actions {
-    
-    export class Action extends BObject {
-	public isDone: any;
-	public tag: any;
-	public target: cocos.nodes.Node;
 
-	constructor();
-	
-	reverse(): Action;
-	
-	startWithTarget(target: cocos.nodes.Node): void;
-	
-	step(dt: number): void;
-	
-	stop(): void;
-	
-	update(time: number): void;
+    export class Action extends BObject {
+        public isDone: any;
+        public tag: any;
+        public target: cocos.nodes.Node;
+
+        constructor();
+
+        reverse(): Action;
+
+        startWithTarget(target: nodes.Node): void;
+
+        step(dt: number): void;
+
+        stop(): void;
+
+        update(time: number): void;
     }
 
 }
 
 module cocos.nodes {
+
+    export class BatchNode extends Node {
+        public dirtyRegion: geometry.Rect;
+
+        constructor(args: { size: geometry.Size; partialDraw?: bool; });
+
+        addChild(opts: any): Node;
+        addDirtyRegion(rect: geometry.Rect): void;
+        draw(ctx: any): void;
+        onEnter(): void;
+        removeChild(opts: any): void;
+        update(): void;
+        visit(context: any): void;
+    }
+
+    export class Label extends Node {
+        public font: string;
+
+        constructor(args: { string?: string; fontSize?: number; fontName?: string; fontColor?: string; });
+        draw(context: any): void;
+    }
+
     export class Node extends BObject {
-	public anchorPoint: geometry.Point;
-	public anchorPointInPixels: geometry.Point;
-	public boundingBox: geometry.Rect;
-	public children: Node[];
-	public contentSize: geometry.Size;
-	public opactity: number;
-	public parent: Node;
-	public position: geometry.Point;
-	public rotation: number;
-	public scale: number;
-	public scaleX: number;
-	public scaleY: number;
-	public tag: any;
-	public visible: bool;
-	public visibleRect: geometry.Rect;
-	public worldBoundingBox: geometry.Rect;
-	public zOrder: number;
+        public anchorPoint: geometry.Point;
+        public anchorPointInPixels: geometry.Point;
+        public boundingBox: geometry.Rect;
+        public children: Node[];
+        public contentSize: geometry.Size;
+        public opactity: number;
+        public parent: Node;
+        public position: geometry.Point;
+        public rotation: number;
+        public scale: number;
+        public scaleX: number;
+        public scaleY: number;
+        public tag: any;
+        public visible: bool;
+        public visibleRect: geometry.Rect;
+        public worldBoundingBox: geometry.Rect;
+        public zOrder: number;
 
-	constructor();
-	
-	addChild(child: { child: Node; z?: number; tag?: string; }): Node;
-	
-	cleanup(): void;
+        constructor();
 
-	convertToNodeSpace(worldPoint: geometry.Point): void;
+        addChild(child: { child: Node; z?: number; tag?: string; }): Node;
 
-	detatchChild(opts: any): void;
+        cleanup(): void;
 
-	draw(context: CanvasRenderingContext2D, rect: geometry.Rect): void;
-	draw(context: WebGLRenderingContext, rect: geometry.Rect): void;
-	
-	getAction(opts: any): cocos.actions.Action;
+        convertToNodeSpace(worldPoint: geometry.Point): void;
 
-	getChild(opts: any): Node;
+        detatchChild(opts: any): void;
 
-	nodeToParentTransform(): void;
-	nodeToWorldTransform(): void;
-	parentToNodeTransform(): void;
-	
-	pauseSchedulerAndActions(): void;
+        draw(context: CanvasRenderingContext2D, rect: geometry.Rect): void;
+        //draw(context: WebGLRenderingContext, rect: geometry.Rect): void;
 
-	removeChild(opts: any): void;
-	removeChildren(opts: any): void;
-	reorderChild(opts: any): void;
-	resumeSchedulerAndActions(): void;
-	runAction(action: cocos.actions.Action): void;
+        getAction(opts: any): actions.Action;
 
-	schedule(method: {method: string; interval?: number;}): void;
-	schedule(method: {method: Function; interval?: number;}): void;
+        getChild(opts: any): Node;
 
-	scheduleUpdate(opts: any): void;
-	stopAllActions(): void;
-	transform(context: any): void;
-	
-	unschedule(method: string): void;
-	unschedule(method: Function): void;
-	unscheduleAllSelectors(): void;
+        nodeToParentTransform(): void;
+        nodeToWorldTransform(): void;
+        parentToNodeTransform(): void;
 
-	unscheduleSelector(selector: any): void;
-	visit(context: any, rect: any): void;
-	worldToNodeTransform(): void;
+        pauseSchedulerAndActions(): void;
+
+        removeChild(opts: any): void;
+        removeChildren(opts: any): void;
+        reorderChild(opts: any): void;
+        resumeSchedulerAndActions(): void;
+        runAction(action: actions.Action): void;
+
+        schedule(method: { method: string; interval?: number; }): void;
+        schedule(method: { method: Function; interval?: number; }): void;
+
+        scheduleUpdate(opts: any): void;
+        stopAllActions(): void;
+        transform(context: any): void;
+
+        unschedule(method: string): void;
+        unschedule(method: Function): void;
+        unscheduleAllSelectors(): void;
+
+        unscheduleSelector(selector: any): void;
+        visit(context: any, rect: any): void;
+        worldToNodeTransform(): void;
     }
 }
 
 module geometry {
     export class Point {
-	public x: number;
-	public y: number;
+        public x: number;
+        public y: number;
 
-	constructor(x: number, y: number);
+        constructor(x: number, y: number);
     }
 
     export class Rect {
-	public origin: Point;
-	public size: Size;
+        public origin: Point;
+        public size: Size;
 
-	constructor(x: number, y: number, w: number, h: number);
+        constructor(x: number, y: number, w: number, h: number);
     }
 
     export class Size {
-	public height: number;
-	public weight: number;
+        public height: number;
+        public weight: number;
 
-	constructor(w: number, h: number);
+        constructor(w: number, h: number);
     }
 }
